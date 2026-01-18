@@ -43,6 +43,7 @@ npm run preview
 
 ## 🔑 Mật khẩu chỉnh sửa
 
+Mật khẩu mặc định: `04122003`
 
 ## 🛠️ Tech Stack
 

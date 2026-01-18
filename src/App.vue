@@ -22,13 +22,9 @@
     <!-- Header -->
     <header class="max-w-[1536px] mx-auto px-4 py-6">
       <div class="flex items-center justify-between flex-wrap gap-4">
-        <div class="flex items-center">
-          <img 
-            src="/logo.jpg" 
-            alt="JimmyJason" 
-            class="h-12 md:h-16 object-contain drop-shadow-lg"
-          />
-        </div>
+        <h1 class="jimmy-jason-logo text-3xl md:text-4xl lg:text-5xl" data-text="JimmyJason">
+          JimmyJason
+        </h1>
 
         <div class="flex items-center gap-3">
           
@@ -480,7 +476,7 @@ const loadCards = () => {
         image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800',
         title: 'Scan tiktok',
         description: 'Có thể lấy 10.000 tài khoản / ngày',
-        url: 'https://drive.google.com/file/d/1pD7ENcquuYGhUoiK4QG2lDGjR1u-8hli/view?usp=sharing'
+        url: 'https://drive.google.com/drive/folders/12Qd5T0QwKDYNL3rhByrj_HHG6Fw7bhlN?usp=sharing'
       },
       {
         id: Date.now() + 1,
