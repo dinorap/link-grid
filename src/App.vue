@@ -22,9 +22,13 @@
     <!-- Header -->
     <header class="max-w-[1536px] mx-auto px-4 py-6">
       <div class="flex items-center justify-between flex-wrap gap-4">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-400 to-cyan-300 animate-gradient bg-[length:200%_auto]">
-          Link Grid
-      </h1>
+        <div class="flex items-center">
+          <img 
+            src="/logo.jpg" 
+            alt="JimmyJason" 
+            class="h-12 md:h-16 object-contain drop-shadow-lg"
+          />
+        </div>
 
         <div class="flex items-center gap-3">
           
@@ -474,9 +478,9 @@ const loadCards = () => {
       {
         id: Date.now(),
         image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800',
-        title: 'GitHub',
-        description: 'Nền tảng lưu trữ và quản lý mã nguồn lớn nhất thế giới',
-        url: 'https://github.com'
+        title: 'Scan tiktok',
+        description: 'Có thể lấy 10.000 tài khoản / ngày',
+        url: 'https://drive.google.com/file/d/1pD7ENcquuYGhUoiK4QG2lDGjR1u-8hli/view?usp=sharing'
       },
       {
         id: Date.now() + 1,
