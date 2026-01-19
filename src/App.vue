@@ -30,6 +30,16 @@
           
           <template v-if="!editMode">
             <button
+              @click="mergeWithDefaultCards"
+              class="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+              title="Cập nhật thẻ mặc định mới nhất (giữ lại thẻ bạn đã thêm)"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              <span class="hidden sm:inline">Cập nhật dữ liệu</span>
+            </button>
+            <button
               @click="showUnlockModal = true"
               class="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
               title="Mở khóa chỉnh sửa"
@@ -51,6 +61,16 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
               <span class="hidden sm:inline">Thoát</span>
+            </button>
+            <button
+              @click="resetLocalStorage"
+              class="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+              title="Xóa toàn bộ dữ liệu trong localStorage"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span class="hidden sm:inline">Reset</span>
             </button>
             <button
               v-if="editMode"
@@ -96,7 +116,7 @@
             @mousedown.stop="editMode && startDrag(index, $event)"
           >
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </div>
 
@@ -125,9 +145,28 @@
 
           <!-- Content -->
           <div class="p-6 flex flex-col flex-grow">
-            <p class="text-gray-100 font-medium text-base md:text-lg mb-4 leading-relaxed drop-shadow-md">
-              {{ card.description }}
-            </p>
+            <div class="mb-4">
+              <p 
+                class="text-gray-100 font-medium text-base md:text-lg leading-relaxed drop-shadow-md whitespace-pre-line text-justify"
+                :class="{ 'line-clamp-3': !expandedDescriptions[card.id] }"
+              >
+                {{ card.description }}
+              </p>
+              <button
+                v-if="!expandedDescriptions[card.id] && isDescriptionTruncated(card.description)"
+                @click.stop="toggleDescription(card.id)"
+                class="text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer transition-colors mt-1"
+              >
+                Xem thêm
+              </button>
+              <button
+                v-if="expandedDescriptions[card.id]"
+                @click.stop="toggleDescription(card.id)"
+                class="text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer transition-colors mt-1"
+              >
+                Thu gọn
+              </button>
+            </div>
             
             <!-- Action buttons -->
             <div class="space-y-3 mt-auto">
@@ -137,7 +176,7 @@
                 target="_blank"
                 class="block w-full inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 hover:from-cyan-400 hover:via-blue-400 hover:to-cyan-400 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/60 hover:scale-[1.02] active:scale-[0.98] bg-[length:200%_auto] hover:bg-[length:100%_auto]"
               >
-                <span>Xem thêm</span>
+                <span>Xem chi tiết</span>
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
@@ -183,7 +222,7 @@
       <div v-if="editMode && cards.length > 1" class="mt-8 text-center">
         <div class="inline-flex items-center gap-3 px-6 py-3 bg-cyan-500/20 border border-cyan-500/30 rounded-full">
           <svg class="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
           <p class="text-cyan-200 font-medium">Chạm vào icon ⬌ ở góc trên trái mỗi card để kéo thả</p>
         </div>
@@ -443,6 +482,14 @@ const touchStartY = ref(null)
 const touchStartX = ref(null)
 const isDragging = ref(false)
 const autoScrollInterval = ref(null)
+const expandedDescriptions = ref({})
+
+// Simple function to check if description is likely truncated (based on character count)
+const isDescriptionTruncated = (description) => {
+  // Assuming ~50-60 characters per line on average, 3 lines = ~150-180 chars
+  // We'll use 120 as threshold to be safe
+  return description && description.length > 120
+}
 
 const newCard = ref({
   image: '',
@@ -458,18 +505,71 @@ const isFormValid = computed(() => {
          newCard.value.url.trim() !== ''
 })
 
+// Get default cards from JSON file
+const getDefaultCards = async () => {
+  try {
+    const baseUrl = import.meta.env.BASE_URL || '/link-grid/'
+    const response = await fetch(`${baseUrl}default-cards.json`)
+    if (response.ok) {
+      const data = await response.json()
+      // Generate IDs for default cards
+      return data.map((card, index) => ({
+        ...card,
+        id: Date.now() + index
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching default cards:', error)
+  }
+  return []
+}
+
+// Merge cards: combine default cards with user's custom cards
+const mergeCards = (defaultCards, savedCards) => {
+  // Get URLs from default cards to identify which are default
+  const defaultUrls = new Set(defaultCards.map(card => card.url))
+  
+  // Separate user's custom cards (cards not in default list)
+  const userCards = savedCards.filter(card => !defaultUrls.has(card.url))
+  
+  // Merge: default cards + user custom cards
+  // Update default cards with latest data from JSON
+  const mergedCards = [...defaultCards]
+  
+  // Add user's custom cards
+  userCards.forEach(userCard => {
+    mergedCards.push(userCard)
+  })
+  
+  return mergedCards
+}
+
 // Load cards from localStorage
-const loadCards = () => {
+const loadCards = async () => {
   const saved = localStorage.getItem('linkGridCards')
+  let savedCards = []
+  
   if (saved) {
     try {
-      cards.value = JSON.parse(saved)
+      savedCards = JSON.parse(saved)
     } catch (e) {
       console.error('Error loading cards:', e)
-      cards.value = []
+      savedCards = []
     }
+  }
+  
+  // Fetch default cards from JSON file
+  const defaultCards = await getDefaultCards()
+  
+  if (defaultCards.length > 0) {
+    // Merge default cards with saved cards
+    cards.value = mergeCards(defaultCards, savedCards)
+    saveCards()
+  } else if (savedCards.length > 0) {
+    // If no default cards file, use saved cards
+    cards.value = savedCards
   } else {
-    // Default cards
+    // Fallback: use hardcoded default cards if JSON file fails
     cards.value = [
       {
         id: Date.now(),
@@ -500,6 +600,41 @@ const loadCards = () => {
 // Save cards to localStorage
 const saveCards = () => {
   localStorage.setItem('linkGridCards', JSON.stringify(cards.value))
+}
+
+// Reset localStorage completely
+const resetLocalStorage = () => {
+  if (confirm('Bạn có chắc muốn xóa toàn bộ dữ liệu trong localStorage?')) {
+    localStorage.clear()
+    alert('Đã xóa localStorage')
+    location.reload()
+  }
+}
+
+// Merge cards with latest default cards from JSON
+const mergeWithDefaultCards = async () => {
+  const saved = localStorage.getItem('linkGridCards')
+  let savedCards = []
+  
+  if (saved) {
+    try {
+      savedCards = JSON.parse(saved)
+    } catch (e) {
+      console.error('Error loading cards:', e)
+    }
+  }
+  
+  // Fetch latest default cards from JSON file
+  const defaultCards = await getDefaultCards()
+  
+  if (defaultCards.length > 0) {
+    // Merge: update default cards + keep user's custom cards
+    cards.value = mergeCards(defaultCards, savedCards)
+    saveCards()
+    alert(`Đã cập nhật thành công! Hiện có ${cards.value.length} thẻ.`)
+  } else {
+    alert('Không thể tải dữ liệu mặc định. Vui lòng thử lại sau.')
+  }
 }
 
 // Check unlock password
@@ -729,6 +864,12 @@ const endTouch = (event) => {
   dragOverIndex.value = null
 }
 
+
+// Toggle description expansion
+const toggleDescription = (cardId) => {
+  expandedDescriptions.value[cardId] = !expandedDescriptions.value[cardId]
+}
+
 // Handle image error
 const handleImageError = (event) => {
   event.target.style.display = 'none'
@@ -766,4 +907,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 </style>
