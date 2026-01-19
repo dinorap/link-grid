@@ -424,7 +424,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-const PASSWORD = '04122003'
+const PASSWORD = '20032003'
 
 const backgroundVideo = ref(null)
 const cards = ref([])
